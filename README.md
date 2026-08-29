@@ -1,14 +1,23 @@
 <div align="center">
 
-  <img src="static/logo.svg" alt="OSINT Dashboard Logo" width="180" height="180" />
+  <img src="static/logo.svg" alt="OSINT Dashboard Logo" width="190" height="190" />
 
   # 🔍 Personal Digital Footprint & OSINT Dashboard
 
   **An Open-Source Intelligence & Digital Footprint Reconnaissance Web Application**
 
-  [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-  [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0-38BDF8.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  <br />
+
+  <img src="static/tech-stack.svg" alt="Tech Stack Logo Banner" width="100%" />
+
+  <br />
+  <br />
+
+  [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+  [![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+  [![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
   [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
   [![Educational Purpose](https://img.shields.io/badge/Purpose-Educational_%26_Learning-orange.svg?style=for-the-badge)](#-educational--learning-purpose)
 
@@ -32,6 +41,21 @@ Designed with a modern **Dark Glassmorphism UI**, the dashboard provides instant
 
 ---
 
+## 💻 Tech Stack & Architecture
+
+| Component | Technology | Purpose |
+| :--- | :--- | :--- |
+| **Backend Core** | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) | Asynchronous API orchestrator & core logic |
+| **Web Framework** | ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white) | REST API routing, CORS middleware & Jinja2 template rendering |
+| **ASGI Server** | ![Uvicorn](https://img.shields.io/badge/Uvicorn-4998F8?style=flat-square&logo=python&logoColor=white) | High-performance asynchronous web server |
+| **Phone Parser** | `phonenumbers` | Google Libphonenumber wrapper for E.164 & carrier metadata |
+| **OSINT Modules** | `holehe`, `ignorant` | Email & phone account existence enumeration |
+| **Breach API** | **XposedOrNot** | Keyless REST API for public data breach lookups |
+| **Frontend UI** | ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38BDF8?style=flat-square&logo=tailwind-css&logoColor=white) | Dark glassmorphism single-page UI layout |
+| **Scripting** | ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black) | Fetch API, mode toggle, animations & JSON report export |
+
+---
+
 ## ✨ Key Features
 
 ### 📱 Phone Intelligence Module
@@ -46,23 +70,11 @@ Designed with a modern **Dark Glassmorphism UI**, the dashboard provides instant
 - **Platform Registration**: Integrates `holehe` for detecting account existence across major online platforms.
 - **Optional HIBP & LeakCheck Integration**: Modular architecture supporting HaveIBeenPwned API keys via environment configuration.
 
-### 💻 User Interface & Reporting
+### 🎨 User Interface & Reporting
 - **Dark Glassmorphism Design**: Responsive UI styled with Tailwind CSS, animated glow elements, and dynamic cards.
 - **Live Mode Toggle**: Seamless switching between Email and Phone search modes.
 - **JSON Report Export**: Export detailed scan results with a single click for auditing.
 - **Resilient Error Handling**: Handles network timeouts and invalid inputs gracefully with toast notifications.
-
----
-
-## 🛠️ Technology Stack
-
-- **Backend Framework**: [FastAPI](https://fastapi.tiangolo.com/) (Python 3.10+)
-- **Server**: [Uvicorn](https://www.uvicorn.org/) (ASGI Server)
-- **Validation & Parsing**: `phonenumbers` (Google Libphonenumber wrapper)
-- **OSINT Wrappers**: `holehe`, `ignorant`
-- **HTTP Client**: `httpx` (Async HTTP)
-- **Frontend**: HTML5, Vanilla JavaScript (ES6+), Tailwind CSS (v3 CDN)
-- **Breach API**: [XposedOrNot](https://xposedornot.com/) Free Public API
 
 ---
 
@@ -152,6 +164,7 @@ OSINT-Dashboard/
 │   └── utils.py                  # Standardized response & HTTP helpers
 ├── static/
 │   ├── logo.svg                  # Project SVG Logo
+│   ├── tech-stack.svg            # Tech Stack Banner Logo
 │   └── js/
 │       └── app.js                # Frontend application logic
 └── templates/

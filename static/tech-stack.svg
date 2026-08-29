@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 140" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgBanner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f0f24" />
+      <stop offset="50%" stop-color="#16162e" />
+      <stop offset="100%" stop-color="#09090b" />
+    </linearGradient>
+
+    <linearGradient id="borderGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#10b981" />
+    </linearGradient>
+
+    <filter id="glow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Card Background -->
+  <rect x="5" y="5" width="840" height="130" rx="16" fill="url(#bgBanner)" stroke="url(#borderGlow)" stroke-width="1.5" />
+
+  <!-- Title Badge -->
+  <text x="425" y="32" font-family="'Inter', system-ui, sans-serif" font-weight="800" font-size="13" fill="#06b6d4" letter-spacing="3" text-anchor="middle">
+    POWERED BY MODERN TECH STACK
+  </text>
+  <line x1="250" y1="42" x2="600" y2="42" stroke="#8b5cf6" stroke-width="1" opacity="0.3" />
+
+  <!-- Tech Item 1: Python -->
+  <g transform="translate(60, 55)">
+    <rect width="105" height="60" rx="10" fill="#1e1e3a" stroke="#312e81" stroke-width="1" />
+    <text x="52" y="35" font-family="'Inter', sans-serif" font-weight="700" font-size="14" fill="#38bdf8" text-anchor="middle">🐍 Python</text>
+    <text x="52" y="50" font-family="'Inter', sans-serif" font-weight="500" font-size="9" fill="#94a3b8" text-anchor="middle">Backend Core</text>
+  </g>
+
+  <!-- Tech Item 2: FastAPI -->
+  <g transform="translate(180, 55)">
+    <rect width="105" height="60" rx="10" fill="#1e1e3a" stroke="#312e81" stroke-width="1" />
+    <text x="52" y="35" font-family="'Inter', sans-serif" font-weight="700" font-size="14" fill="#009688" text-anchor="middle">⚡ FastAPI</text>
+    <text x="52" y="50" font-family="'Inter', sans-serif" font-weight="500" font-size="9" fill="#94a3b8" text-anchor="middle">REST Framework</text>
+  </g>
+
+  <!-- Tech Item 3: Tailwind CSS -->
+  <g transform="translate(300, 55)">
+    <rect width="105" height="60" rx="10" fill="#1e1e3a" stroke="#312e81" stroke-width="1" />
+    <text x="52" y="35" font-family="'Inter', sans-serif" font-weight="700" font-size="14" fill="#38bdf8" text-anchor="middle">🎨 Tailwind</text>
+    <text x="52" y="50" font-family="'Inter', sans-serif" font-weight="500" font-size="9" fill="#94a3b8" text-anchor="middle">Glassmorphic UI</text>
+  </g>
+
+  <!-- Tech Item 4: JavaScript -->
+  <g transform="translate(420, 55)">
+    <rect width="105" height="60" rx="10" fill="#1e1e3a" stroke="#312e81" stroke-width="1" />
+    <text x="52" y="35" font-family="'Inter', sans-serif" font-weight="700" font-size="14" fill="#facc15" text-anchor="middle">🟨 JavaScript</text>
+    <text x="52" y="50" font-family="'Inter', sans-serif" font-weight="500" font-size="9" fill="#94a3b8" text-anchor="middle">Async Client</text>
+  </g>
+
+  <!-- Tech Item 5: Libphonenumber -->
+  <g transform="translate(540, 55)">
+    <rect width="115" height="60" rx="10" fill="#1e1e3a" stroke="#312e81" stroke-width="1" />
+    <text x="57" y="35" font-family="'Inter', sans-serif" font-weight="700" font-size="13" fill="#a78bfa" text-anchor="middle">📞 PhoneLib</text>
+    <text x="57" y="50" font-family="'Inter', sans-serif" font-weight="500" font-size="9" fill="#94a3b8" text-anchor="middle">Google E.164</text>
+  </g>
+
+  <!-- Tech Item 6: XposedOrNot -->
+  <g transform="translate(670, 55)">
+    <rect width="115" height="60" rx="10" fill="#1e1e3a" stroke="#312e81" stroke-width="1" />
+    <text x="57" y="35" font-family="'Inter', sans-serif" font-weight="700" font-size="13" fill="#fca5a5" text-anchor="middle">🔓 Breach API</text>
+    <text x="57" y="50" font-family="'Inter', sans-serif" font-weight="500" font-size="9" fill="#94a3b8" text-anchor="middle">XposedOrNot</text>
+  </g>
+</svg>
