@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-dotenv
+requests
+httpx
+phonenumbers
+holehe
+ignorant
+python-multipart

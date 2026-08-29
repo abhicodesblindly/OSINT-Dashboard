@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OSINT Dashboard — Digital Footprint Scanner</title>
+  <meta name="description" content="Personal Digital Footprint & OSINT Dashboard. Scan phone numbers and emails for publicly available intelligence." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            dark: {
+              900: '#050510',
+              800: '#0a0a1a',
+              700: '#0f0f24',
+              600: '#16162e',
+              500: '#1e1e3a',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* ===== BASE ===== */
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #050510;
+      color: #e2e8f0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== ANIMATED BACKGROUND ===== */
+    .bg-orbs {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.13;
+      animation: float 20s ease-in-out infinite;
+    }
+    .orb-1 { width: 600px; height: 600px; background: #8b5cf6; top: -10%; left: -10%; animation-delay: 0s; }
+    .orb-2 { width: 500px; height: 500px; background: #06b6d4; bottom: -10%; right: -10%; animation-delay: -7s; }
+    .orb-3 { width: 400px; height: 400px; background: #ec4899; top: 50%; left: 50%; transform: translate(-50%, -50%); animation-delay: -14s; }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -50px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    /* ===== GLASSMORPHISM ===== */
+    .glass {
+      background: rgba(15, 15, 35, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      border-radius: 16px;
+    }
+    .glass-strong {
+      background: rgba(15, 15, 35, 0.8);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 20px;
+    }
+
+    /* ===== GRADIENT TEXT ===== */
+    .gradient-text {
+      background: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ===== GLOW BORDER ===== */
+    .glow-border { position: relative; }
+    .glow-border::before {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #8b5cf6, #06b6d4, #8b5cf6);
+      background-size: 300% 300%;
+      animation: gradient-shift 4s ease infinite;
+      z-index: -1;
+      opacity: 0.4;
+    }
+    @keyframes gradient-shift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* ===== MODE TOGGLE ===== */
+    .mode-btn {
+      padding: 10px 28px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid transparent;
+      cursor: pointer;
+      background: transparent;
+      color: #94a3b8;
+    }
+    .mode-btn:hover {
+      color: #e2e8f0;
+      background: rgba(139, 92, 246, 0.1);
+    }
+    .mode-btn.active {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(6, 182, 212, 0.15));
+      color: #f1f5f9;
+      border-color: rgba(139, 92, 246, 0.4);
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.15);
+    }
+
+    /* ===== SCAN INPUT ===== */
+    .scan-input {
+      background: rgba(5, 5, 16, 0.8);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      color: #f1f5f9;
+      width: 100%;
+      transition: all 0.3s ease;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .scan-input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15), 0 0 30px rgba(139, 92, 246, 0.1);
+    }
+    .scan-input::placeholder { color: #475569; }
+
+    /* ===== SCAN BUTTON ===== */
+    .scan-btn {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 32px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+    }
+    .scan-btn::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1), transparent);
+      transform: translateX(-100%);
+      transition: transform 0.6s;
+    }
+    .scan-btn:hover:not(:disabled)::after {
+      transform: translateX(100%);
+    }
+    .scan-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(139, 92, 246, 0.4);
+    }
+    .scan-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+    .scan-btn.scanning {
+      background: linear-gradient(135deg, #6d28d9, #5b21b6);
+    }
+
+    /* ===== SPINNER ===== */
+    .spinner {
+      width: 20px; height: 20px;
+      border: 2.5px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===== RESULT CARDS ===== */
+    .result-card { transition: all 0.3s ease; }
+    .result-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 40px rgba(139, 92, 246, 0.12);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+    .card-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+    }
+    .icon-meta { background: rgba(139, 92, 246, 0.15); }
+    .icon-breach { background: rgba(239, 68, 68, 0.15); }
+    .icon-accounts { background: rgba(6, 182, 212, 0.15); }
+
+    /* ===== METADATA GRID ===== */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .meta-item {
+      background: rgba(5, 5, 16, 0.5);
+      border: 1px solid rgba(139, 92, 246, 0.1);
+      border-radius: 10px;
+      padding: 12px 16px;
+      transition: border-color 0.2s;
+    }
+    .meta-item:hover { border-color: rgba(139, 92, 246, 0.3); }
+    .meta-label {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #64748b;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    .meta-value {
+      display: block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.88rem;
+      color: #e2e8f0;
+      font-weight: 500;
+      word-break: break-all;
+    }
+    .badge-ok { color: #10b981; font-weight: 600; }
+    .line-type-badge {
+      color: #a78bfa;
+    }
+
+    /* ===== BREACHES ===== */
+    .breach-list { display: flex; flex-direction: column; gap: 10px; }
+    .breach-item {
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.15);
+      border-radius: 10px;
+      padding: 14px 18px;
+      transition: all 0.2s;
+    }
+    .breach-item:hover {
+      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.08);
+    }
+    .breach-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .breach-name { font-weight: 700; color: #fca5a5; font-size: 0.95rem; }
+    .breach-source {
+      font-size: 0.7rem;
+      color: #64748b;
+      background: rgba(100, 116, 139, 0.15);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 500;
+    }
+    .breach-details {
+      display: flex;
+      gap: 16px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-bottom: 6px;
+      flex-wrap: wrap;
+    }
+    .breach-data-types { font-size: 0.78rem; color: #64748b; font-style: italic; }
+
+    /* ===== ACCOUNTS ===== */
+    .accounts-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .account-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .acc-found {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+      color: #6ee7b7;
+    }
+    .acc-found:hover { border-color: rgba(16, 185, 129, 0.5); background: rgba(16, 185, 129, 0.15); }
+    .acc-not-found {
+      background: rgba(100, 116, 139, 0.08);
+      border: 1px solid rgba(100, 116, 139, 0.15);
+      color: #64748b;
+    }
+    .acc-icon { font-size: 0.85rem; }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state { text-align: center; padding: 24px 16px; color: #64748b; }
+    .empty-icon { width: 48px; height: 48px; margin: 0 auto 12px; color: #334155; }
+    .empty-state code {
+      background: rgba(139, 92, 246, 0.1);
+      color: #a78bfa;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    /* ===== EXPORT BUTTON ===== */
+    .export-btn {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(6, 182, 212, 0.15));
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+      border-radius: 12px;
+      padding: 12px 28px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .export-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.5);
+    }
+
+    /* ===== ERROR TOAST ===== */
+    .error-toast {
+      position: fixed;
+      top: 24px; right: 24px;
+      background: rgba(239, 68, 68, 0.15);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 14px 20px;
+      color: #fca5a5;
+      font-size: 0.9rem;
+      z-index: 1000;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ===== BADGE ===== */
+    .count-badge {
+      background: rgba(139, 92, 246, 0.2);
+      color: #c4b5fd;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+      min-width: 28px;
+      text-align: center;
+    }
+    .count-badge.danger { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+    .count-badge.success { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .hidden { display: none !important; }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a1a; }
+    ::-webkit-scrollbar-thumb { background: #1e1e3a; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2e2e4a; }
+
+    /* ===== DISCLAIMER ===== */
+    .disclaimer {
+      color: #475569;
+      font-size: 0.75rem;
+      text-align: center;
+      border-top: 1px solid rgba(139, 92, 246, 0.08);
+      padding-top: 20px;
+    }
+
+    /* ===== LOGO PULSE ===== */
+    .logo-icon {
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+      50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6), 0 0 60px rgba(6, 182, 212, 0.2); }
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 640px) {
+      .meta-grid { grid-template-columns: 1fr; }
+      .breach-details { flex-direction: column; gap: 4px; }
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <!-- Animated Background -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Error Toast -->
+  <div id="error-toast" class="error-toast hidden">
+    <span>⚠️</span>
+    <span id="error-text"></span>
+  </div>
+
+  <!-- Main Container -->
+  <div class="relative z-10 max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="text-center mb-10">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="logo-icon w-12 h-12 rounded-xl bg-gradient-to-br from-violet-600 to-cyan-500 flex items-center justify-center text-2xl">
+          🔍
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-black tracking-tight">
+          <span class="gradient-text">OSINT Dashboard</span>
+        </h1>
+      </div>
+      <p class="text-slate-400 text-sm max-w-lg mx-auto leading-relaxed">
+        Scan phone numbers and email addresses against publicly available intelligence databases.
+        Discover your digital footprint.
+      </p>
+    </header>
+
+    <!-- Search Panel -->
+    <section class="glass-strong glow-border p-6 sm:p-8 mb-8">
+      <!-- Mode Toggle -->
+      <div class="flex items-center justify-center gap-3 mb-6">
+        <button id="btn-email" class="mode-btn active" type="button">
+          📧&nbsp; Email
+        </button>
+        <button id="btn-phone" class="mode-btn" type="button">
+          📱&nbsp; Phone
+        </button>
+      </div>
+
+      <!-- Input -->
+      <label id="input-label" class="block text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2 ml-1">
+        Email Address
+      </label>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input
+          id="scan-input"
+          class="scan-input flex-1"
+          type="email"
+          placeholder="Enter email address…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="scan-btn" class="scan-btn" type="button">
+          <span id="scan-btn-text">Scan</span>
+          <div id="scan-spinner" class="spinner hidden"></div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Scan Timestamp -->
+    <p id="scan-timestamp" class="hidden text-center text-xs text-slate-600 mb-4 font-mono"></p>
+
+    <!-- Results Section -->
+    <section id="results-section" class="hidden space-y-6 mb-8 flex-1">
+
+      <!-- Metadata Card -->
+      <div id="metadata-card" class="glass result-card p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="card-icon icon-meta">🔍</div>
+          <div>
+            <h2 class="text-lg font-bold text-slate-100">Metadata</h2>
+            <p class="text-xs text-slate-500">Parsed identity information</p>
+          </div>
+        </div>
+        <div id="metadata-body"></div>
+      </div>
+
+      <!-- Breaches Card -->
+      <div id="breaches-card" class="glass result-card p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="card-icon icon-breach">🔓</div>
+          <div class="flex-1">
+            <h2 class="text-lg font-bold text-slate-100">Breaches Found</h2>
+            <p class="text-xs text-slate-500">Compromised database appearances</p>
+          </div>
+          <span id="breach-count" class="count-badge danger">0</span>
+        </div>
+        <div id="breaches-body"></div>
+      </div>
+
+      <!-- Accounts Card -->
+      <div id="accounts-card" class="glass result-card p-6">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="card-icon icon-accounts">🌐</div>
+          <div class="flex-1">
+            <h2 class="text-lg font-bold text-slate-100">Linked Accounts</h2>
+            <p class="text-xs text-slate-500">Platform registration status</p>
+          </div>
+          <span id="account-count" class="count-badge success">0</span>
+        </div>
+        <div id="accounts-body"></div>
+      </div>
+    </section>
+
+    <!-- Export Button -->
+    <div class="text-center mb-10">
+      <button id="export-btn" class="export-btn hidden" type="button">
+        📥&nbsp; Export JSON Report
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="disclaimer mt-auto">
+      <p>⚠️ This tool is intended for <strong>authorized security research</strong> and personal digital footprint awareness only.</p>
+      <p class="mt-1">Do not use for unauthorized surveillance, stalking, or harassment. Respect all applicable laws.</p>
+      <p class="mt-2 text-slate-600">Powered by XposedOrNot • phonenumbers • holehe • ignorant</p>
+    </footer>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
